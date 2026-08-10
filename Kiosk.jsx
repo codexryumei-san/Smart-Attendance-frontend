@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
-const API_BASE = "http://localhost:5000";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const UNLOCK_SCAN_INTERVAL_MS = 1500; // how often we probe for a course rep face
 const ATTENDANCE_SCAN_INTERVAL_MS = 1500;
 const IT_COURSE_NAME = "Information Technology";

@@ -7,6 +7,8 @@ export default function ReportsView() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isOverriding, setIsOverriding] = useState(false);
   
   // Filters
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -18,6 +20,14 @@ export default function ReportsView() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [overrideReason, setOverrideReason] = useState("");
   const [selectedSessionId, setSelectedSessionId] = useState(null);
+
+  // Auto-dismiss error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   useEffect(() => {
     fetchCourses();
@@ -66,6 +76,7 @@ export default function ReportsView() {
   }
 
   async function handleExportCSV() {
+    setIsExporting(true);
     try {
       const params = new URLSearchParams();
       if (selectedCourse) params.append("course_id", selectedCourse);
@@ -76,6 +87,8 @@ export default function ReportsView() {
       setError(null);
     } catch (err) {
       setError(err.message || "Failed to export CSV");
+    } finally {
+      setIsExporting(false);
     }
   }
 
@@ -94,6 +107,7 @@ export default function ReportsView() {
       return;
     }
 
+    setIsOverriding(true);
     try {
       await api.overrideAttendance({
         session_id: selectedSessionId,
@@ -110,6 +124,8 @@ export default function ReportsView() {
       fetchAnalytics();
     } catch (err) {
       setError(err.message || "Failed to override attendance");
+    } finally {
+      setIsOverriding(false);
     }
   }
 
@@ -235,9 +251,17 @@ export default function ReportsView() {
           <div className="flex items-end">
             <button
               onClick={handleExportCSV}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+              disabled={isExporting}
+              className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              Export CSV
+              {isExporting ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  Exporting...
+                </>
+              ) : (
+                "Export CSV"
+              )}
             </button>
           </div>
         </div>
@@ -245,7 +269,10 @@ export default function ReportsView() {
 
       {/* Error Message */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 flex items-center gap-2">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           {error}
         </div>
       )}
@@ -409,9 +436,17 @@ export default function ReportsView() {
               </button>
               <button
                 onClick={handleOverride}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+                disabled={isOverriding}
+                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                Confirm Override
+                {isOverriding ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    Processing...
+                  </>
+                ) : (
+                  "Confirm Override"
+                )}
               </button>
             </div>
           </div>

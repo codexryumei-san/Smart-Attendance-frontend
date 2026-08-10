@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://smart-attendance-backend-x0ph.onrender.com";
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -104,6 +104,12 @@ export const api = {
   },
 
   getAnalyticsSummary: () => request("/api/analytics/summary"),
+
+  resetDemo: () =>
+    request("/api/demo/reset", {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
 };
 
 export default api;
