@@ -11,7 +11,7 @@ const PAGE_TITLES = {
   sessions: "Sessions",
   reports: "Reports",
   users: "Users",
-};
+};32
 
 // Emergency Reset for Live Demo
   const handleResetDemo = async () => {
@@ -32,6 +32,15 @@ function PlaceholderPage({ title }) {
     <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
       <p className="text-lg font-medium text-slate-700">{title}</p>
       <p className="mt-2 text-sm text-slate-500">Coming soon.</p>
+    </div>
+  );
+}
+
+export default function AdminPortal() {
+  return (
+    <div style={{ padding: '40px', textAlign: 'center' }}>
+      <h1>Admin Portal</h1>
+      <p>Student registration and course management.</p>
     </div>
   );
 }

@@ -2,7 +2,16 @@ import { useState, useEffect, useRef } from "react";
 import Webcam from "react-webcam";
 import api from "../api";
 
-export default function KioskPortal() {
+export default function KioskMode() {
+  return (
+    <div style={{ padding: '40px', textAlign: 'center' }}>
+      <h1>Kiosk Mode (Webcam Scanner)</h1>
+      <p>Webcam interface for student attendance scanning.</p>
+    </div>
+  );
+}
+
+export default function KioskMode() {
   const [courses, setCourses] = useState([]);
   const [activeSession, setActiveSession] = useState(null);
   const [loading, setLoading] = useState(true);
