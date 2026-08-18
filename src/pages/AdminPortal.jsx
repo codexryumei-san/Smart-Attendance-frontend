@@ -1,131 +1,101 @@
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
+import Dashboard from "../components/Dashboard";
 import RegisterStudent from "../components/RegisterStudent";
-import ReportsView from "../components/ReportsView";
-import CourseManagement from "../components/CourseManagement";
 import UserManagement from "../components/UserManagement";
-import Dashboard from "../components/Dashboard";         // NEW
-import SessionManagement from "../components/SessionManagement"; // NEW
-import api from "../api";
+import CourseManagement from "../components/CourseManagement";
 
 const PAGE_TITLES = {
-  dashboard: "Dashboard",
-  register: "Register Student",
-  courses: "Courses",
-  sessions: "Sessions",
-  reports: "Reports",
-  users: "Users",
+  dashboard: "Dashboard Overview",
+  register: "Register New Student",
+  users: "User Management",
+  courses: "Manage Group Courses",
 };
 
-function PlaceholderPage({ title }) {
-  return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-      <p className="text-lg font-medium text-slate-700">{title}</p>
-      <p className="mt-2 text-sm text-slate-500">Coming soon.</p>
-    </div>
-  );
-}
+// Notice we added onLogout as a prop here
+export default function AdminPortal({ onLogout }) {
+  const [activePage, setActivePage] = useState("dashboard");
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Controls the hamburger menu
 
-export default function AdminPortal() {
-  const [activePage, setActivePage] = useState("register");
-  const [isResetting, setIsResetting] = useState(false);
-  const [resetMessage, setResetMessage] = useState(null);
-
-  async function handleResetDemo() {
-    if (!confirm("Are you sure you want to reset the demo? This will close all active sessions.")) {
-      return;
-    }
-    
-    setIsResetting(true);
-    try {
-      await api.resetDemo();
-      setResetMessage({ type: "success", message: "Demo reset successfully! All sessions closed." });
-      setTimeout(() => setResetMessage(null), 3000);
-    } catch (err) {
-      setResetMessage({ type: "error", message: err.message || "Failed to reset demo" });
-      setTimeout(() => setResetMessage(null), 3000);
-    } finally {
-      setIsResetting(false);
-    }
-  }
-
-
-function renderPage() {
+  function renderPage() {
     switch (activePage) {
       case "dashboard":
-        return <Dashboard />;             // No longer a placeholder!
+        return <Dashboard />;
       case "register":
         return <RegisterStudent />;
-      case "courses":
-        return <CourseManagement />;
-      case "sessions":
-        return <SessionManagement />;     // Now points to its own dedicated page
-      case "reports":
-        return <ReportsView />;
       case "users":
         return <UserManagement />;
+      case "courses":
+        return <CourseManagement />;
       default:
-        return <PlaceholderPage title="Page Not Found" />;
+        return <Dashboard />;
     }
   }
-  
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
       <Sidebar activePage={activePage} onNavigate={setActivePage} />
 
       <main className="flex-1 overflow-y-auto">
-        <header className="border-b border-slate-200 bg-white px-8 py-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-indigo-600">
-                Administrator
-              </p>
-              <h1 className="mt-1 text-xl font-semibold text-slate-900">
-                {PAGE_TITLES[activePage] || "Admin Portal"}
-              </h1>
-            </div>
-            <button
-              onClick={handleResetDemo}
-              disabled={isResetting}
-              className="rounded-lg border border-orange-300 bg-orange-50 px-4 py-2 text-sm font-medium text-orange-700 transition-colors hover:bg-orange-100 disabled:cursor-not-allowed disabled:opacity-60 flex items-center gap-2"
-            >
-              {isResetting ? (
-                <>
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-orange-600 border-t-transparent"></div>
-                  Resetting...
-                </>
-              ) : (
-                <>
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Reset Demo
-                </>
-              )}
-            </button>
+        {/* Header with Hamburger Menu */}
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/80 px-10 py-6 backdrop-blur-md">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">
+              Admin Workspace
+            </p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">
+              {PAGE_TITLES[activePage] || "Admin Portal"}
+            </h1>
           </div>
-          {resetMessage && (
-            <div className={`mt-3 rounded-lg px-4 py-2 text-sm flex items-center gap-2 ${
-              resetMessage.type === "success"
-                ? "bg-green-50 text-green-800"
-                : "bg-red-50 text-red-800"
-            }`}>
-              {resetMessage.type === "success" ? (
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
-              {resetMessage.message}
-            </div>
-          )}
+
+          {/* Hamburger Menu Section */}
+          <div className="relative">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            >
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            {/* Dropdown Card */}
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-3 w-64 rounded-xl border border-slate-200 bg-white py-2 shadow-xl z-50">
+                {/* User Profile Info */}
+                <div className="border-b border-slate-100 px-5 py-3">
+                  <p className="text-sm font-bold text-slate-800">System Administrator</p>
+                  <p className="truncate text-xs font-medium text-slate-500">admin@gctu.edu.gh</p>
+                </div>
+                
+                {/* Menu Links */}
+                <div className="py-2">
+                  <button className="flex w-full items-center px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-indigo-600">
+                    My Profile
+                  </button>
+                  <button className="flex w-full items-center px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-indigo-600">
+                    Change Password
+                  </button>
+                </div>
+                
+                {/* Logout Action */}
+                <div className="border-t border-slate-100 py-2">
+                  <button 
+                    onClick={onLogout} 
+                    className="flex w-full items-center px-5 py-2.5 text-sm font-bold text-red-600 transition-colors hover:bg-red-50"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </header>
 
-        <div className="p-8">{renderPage()}</div>
+        {/* Dynamic Page Content */}
+        <div className="p-10">
+          <div className="mx-auto max-w-6xl">{renderPage()}</div>
+        </div>
       </main>
     </div>
   );

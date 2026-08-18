@@ -45,18 +45,12 @@ export default function App() {
     );
   }
 
-  // Authenticated? Route to the correct portal based on role.
+ // Authenticated? Route to the correct portal based on role.
   return (
     <div className="relative min-h-screen">
-      <button 
-        onClick={handleLogout} 
-        className="absolute top-6 right-64 z-50 bg-red-100 text-red-600 px-4 py-2 rounded-lg font-bold border border-red-200 hover:bg-red-200 transition-colors"
-      >
-        Log Out
-      </button>
-      
-      {userRole === 'admin' && <AdminPortal />}
-      {userRole === 'lecturer' && <LecturerPortal />}
+      {/* We pass handleLogout as a prop to both portals so the Hamburger menus can trigger it */}
+      {userRole === 'admin' && <AdminPortal onLogout={handleLogout} />}
+      {userRole === 'lecturer' && <LecturerPortal onLogout={handleLogout} />}
     </div>
   );
 }
