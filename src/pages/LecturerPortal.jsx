@@ -25,10 +25,9 @@ function PlaceholderPage({ title }) {
   );
 }
 
-// Added onLogout prop
 export default function LecturerPortal({ onLogout }) {
   const [activePage, setActivePage] = useState("dashboard");
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Controls the hamburger menu
+  const [isMenuLocked, setIsMenuLocked] = useState(false); // Controls the click-to-stay behavior
 
   function renderPage() {
     switch (activePage) {
@@ -48,7 +47,7 @@ export default function LecturerPortal({ onLogout }) {
       <LecturerSidebar activePage={activePage} onNavigate={setActivePage} />
 
       <main className="flex-1 overflow-y-auto">
-        {/* Header with Hamburger Menu */}
+        {/* Glassmorphism Header */}
         <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/80 px-10 py-6 backdrop-blur-md">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-emerald-600">
@@ -59,47 +58,60 @@ export default function LecturerPortal({ onLogout }) {
             </h1>
           </div>
 
-          {/* Hamburger Menu Section */}
-          <div className="relative">
+          {/* User Profile Dropdown Area (Hover & Click) */}
+          <div 
+            className="relative group"
+            onMouseLeave={() => setIsMenuLocked(false)} // Unlocks the menu when you move away
+          >
             <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              onClick={() => setIsMenuLocked(!isMenuLocked)}
+              className="flex items-center gap-3 rounded-full border border-slate-200 bg-white p-1 pr-4 text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
             >
-              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              {/* Avatar with Initial */}
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-lg font-bold text-white shadow-sm">
+                L
+              </div>
+              <span className="text-sm font-bold text-slate-700">Lecturer</span>
+              <svg className="h-4 w-4 text-slate-400 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
             {/* Dropdown Card */}
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-3 w-64 rounded-xl border border-slate-200 bg-white py-2 shadow-xl z-50">
-                {/* User Profile Info */}
-                <div className="border-b border-slate-100 px-5 py-3">
-                  <p className="text-sm font-bold text-slate-800">Faculty Member</p>
-                  <p className="truncate text-xs font-medium text-slate-500">lecturer@gctu.edu.gh</p>
-                </div>
-                
-                {/* Menu Links */}
-                <div className="py-2">
-                  <button className="flex w-full items-center px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-emerald-600">
-                    My Profile
-                  </button>
-                  <button className="flex w-full items-center px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-emerald-600">
-                    Change Password
-                  </button>
-                </div>
-                
-                {/* Logout Action */}
-                <div className="border-t border-slate-100 py-2">
-                  <button 
-                    onClick={onLogout} 
-                    className="flex w-full items-center px-5 py-2.5 text-sm font-bold text-red-600 transition-colors hover:bg-red-50"
-                  >
-                    Log Out
-                  </button>
-                </div>
+            <div className={`absolute right-0 mt-2 w-64 rounded-xl border border-slate-200 bg-white py-2 shadow-xl z-50 transition-all duration-200 origin-top-right ${
+              isMenuLocked 
+                ? 'opacity-100 scale-100 visible' 
+                : 'opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible'
+            }`}>
+              {/* User Profile Info */}
+              <div className="border-b border-slate-100 px-5 py-4 bg-slate-50 rounded-t-xl">
+                <p className="text-sm font-bold text-slate-800">Faculty Member</p>
+                <p className="truncate text-xs font-medium text-slate-500 mt-0.5">lecturer@gctu.edu.gh</p>
               </div>
-            )}
+              
+              {/* Menu Links */}
+              <div className="py-2">
+                <button className="flex w-full items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-emerald-50 hover:text-emerald-700">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                  My Profile
+                </button>
+                <button className="flex w-full items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-emerald-50 hover:text-emerald-700">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                  Change Password
+                </button>
+              </div>
+              
+              {/* Logout Action */}
+              <div className="border-t border-slate-100 py-2">
+                <button 
+                  onClick={onLogout} 
+                  className="flex w-full items-center gap-3 px-5 py-2.5 text-sm font-bold text-red-600 transition-colors hover:bg-red-50"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                  Log Out
+                </button>
+              </div>
+            </div>
           </div>
         </header>
 
