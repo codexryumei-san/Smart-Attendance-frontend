@@ -2,6 +2,10 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import RegisterStudent from "../components/RegisterStudent";
 import ReportsView from "../components/ReportsView";
+import CourseManagement from "../components/CourseManagement";
+import UserManagement from "../components/UserManagement";
+import Dashboard from "../components/Dashboard";         // NEW
+import SessionManagement from "../components/SessionManagement"; // NEW
 import api from "../api";
 
 const PAGE_TITLES = {
@@ -11,36 +15,13 @@ const PAGE_TITLES = {
   sessions: "Sessions",
   reports: "Reports",
   users: "Users",
-};32
+};
 
-// Emergency Reset for Live Demo
-  const handleResetDemo = async () => {
-    try {
-        // You can link this to an endpoint that drops active sessions
-        await fetch('https://smart-attendance-backend-x0ph.onrender.com', { method: 'POST' });
-        alert("Demo Reset Successful: All active sessions closed.");
-        window.location.reload(); // Refresh the UI
-    } catch (error) {
-        console.error("Reset failed", error);
-    }
-  };
-
-// Paste this button somewhere in your JSX render return:
-// <button onClick={handleResetDemo} className="bg-red-600 text-white px-4 py-2 rounded">Emergency Reset Demo</button>
 function PlaceholderPage({ title }) {
   return (
     <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
       <p className="text-lg font-medium text-slate-700">{title}</p>
       <p className="mt-2 text-sm text-slate-500">Coming soon.</p>
-    </div>
-  );
-}
-
-export default function AdminPortal() {
-  return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1>Admin Portal</h1>
-      <p>Student registration and course management.</p>
     </div>
   );
 }
@@ -68,24 +49,26 @@ export default function AdminPortal() {
     }
   }
 
-  function renderPage() {
+
+function renderPage() {
     switch (activePage) {
+      case "dashboard":
+        return <Dashboard />;             // No longer a placeholder!
       case "register":
         return <RegisterStudent />;
-      case "dashboard":
-        return <PlaceholderPage title="Dashboard Overview" />;
       case "courses":
-        return <PlaceholderPage title="Course Management" />;
+        return <CourseManagement />;
       case "sessions":
-        return <PlaceholderPage title="Session History" />;
+        return <SessionManagement />;     // Now points to its own dedicated page
       case "reports":
         return <ReportsView />;
       case "users":
-        return <PlaceholderPage title="User Management" />;
+        return <UserManagement />;
       default:
         return <PlaceholderPage title="Page Not Found" />;
     }
   }
+  
 
   return (
     <div className="flex min-h-screen">
