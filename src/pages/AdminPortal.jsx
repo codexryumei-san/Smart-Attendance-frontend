@@ -14,7 +14,8 @@ const PAGE_TITLES = {
 
 export default function AdminPortal({ onLogout }) {
   const [activePage, setActivePage] = useState("dashboard");
-  const [isMenuLocked, setIsMenuLocked] = useState(false); // Controls the click-to-stay behavior
+  const [isMenuLocked, setIsMenuLocked] = useState(false); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // NEW: Controls mobile sidebar
 
   function renderPage() {
     switch (activePage) {
@@ -33,41 +34,60 @@ export default function AdminPortal({ onLogout }) {
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
-      <Sidebar activePage={activePage} onNavigate={setActivePage} />
+      
+      {/* Upgraded Sidebar */}
+      <Sidebar 
+        activePage={activePage} 
+        onNavigate={setActivePage} 
+        isOpen={isSidebarOpen} 
+        setIsOpen={setIsSidebarOpen} 
+      />
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden">
         {/* Glassmorphism Header */}
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/80 px-10 py-6 backdrop-blur-md">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">
-              Admin Workspace
-            </p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">
-              {PAGE_TITLES[activePage] || "Admin Portal"}
-            </h1>
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/80 px-4 py-4 backdrop-blur-md md:px-10 md:py-6">
+          
+          <div className="flex items-center gap-4">
+            {/* NEW: Mobile Sidebar Toggle Button */}
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100 md:hidden"
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600 hidden md:block">
+                Admin Workspace
+              </p>
+              <h1 className="mt-1 text-lg font-bold tracking-tight text-slate-900 md:text-2xl">
+                {PAGE_TITLES[activePage] || "Admin Portal"}
+              </h1>
+            </div>
           </div>
 
           {/* User Profile Dropdown Area (Hover & Click) */}
           <div 
             className="relative group"
-            onMouseLeave={() => setIsMenuLocked(false)} // Unlocks the menu when you move away
+            onMouseLeave={() => setIsMenuLocked(false)}
           >
             <button 
               onClick={() => setIsMenuLocked(!isMenuLocked)}
-              className="flex items-center gap-3 rounded-full border border-slate-200 bg-white p-1 pr-4 text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="flex items-center gap-2 md:gap-3 rounded-full border border-slate-200 bg-white p-1 pr-2 md:pr-4 text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:shadow"
             >
-              {/* Avatar with Initial */}
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-lg font-bold text-white shadow-sm">
+              <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-indigo-600 text-sm md:text-lg font-bold text-white shadow-sm">
                 A
               </div>
-              <span className="text-sm font-bold text-slate-700">Admin</span>
+              <span className="hidden md:block text-sm font-bold text-slate-700">Admin</span>
               <svg className="h-4 w-4 text-slate-400 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
             {/* Dropdown Card */}
-            <div className={`absolute right-0 mt-2 w-64 rounded-xl border border-slate-200 bg-white py-2 shadow-xl z-50 transition-all duration-200 origin-top-right ${
+            <div className={`absolute right-0 mt-2 w-56 md:w-64 rounded-xl border border-slate-200 bg-white py-2 shadow-xl z-50 transition-all duration-200 origin-top-right ${
               isMenuLocked 
                 ? 'opacity-100 scale-100 visible' 
                 : 'opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible'
@@ -78,25 +98,20 @@ export default function AdminPortal({ onLogout }) {
                 <p className="truncate text-xs font-medium text-slate-500 mt-0.5">admin@gctu.edu.gh</p>
               </div>
               
-              {/* Menu Links */}
               <div className="py-2">
                 <button className="flex w-full items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                   My Profile
                 </button>
                 <button className="flex w-full items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                   Change Password
                 </button>
               </div>
               
-              {/* Logout Action */}
               <div className="border-t border-slate-100 py-2">
                 <button 
                   onClick={onLogout} 
                   className="flex w-full items-center gap-3 px-5 py-2.5 text-sm font-bold text-red-600 transition-colors hover:bg-red-50"
                 >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                   Log Out
                 </button>
               </div>
@@ -105,7 +120,7 @@ export default function AdminPortal({ onLogout }) {
         </header>
 
         {/* Dynamic Page Content */}
-        <div className="p-10">
+        <div className="p-4 md:p-10">
           <div className="mx-auto max-w-6xl">{renderPage()}</div>
         </div>
       </main>
