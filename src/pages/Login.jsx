@@ -20,7 +20,7 @@ export default function Login({ onLogin, onNavigateToSignUp }) {
         body: JSON.stringify({ 
           email: email, 
           password: password,
-          role: role // Only include this if you added a role dropdown to the login form
+          role: role // Only include this if you added a role dropdown to the signup page
         })
       });
 
@@ -66,16 +66,7 @@ export default function Login({ onLogin, onNavigateToSignUp }) {
           {/* Error Message Display */}
           {error && (
             <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100">
-              {/* Sign Up Link */}
-              <p className="mt-6 text-center text-sm text-slate-600">
-                Don't have an account?{" "}
-                <button 
-                onClick={onNavigateToSignUp} 
-                className="font-bold text-indigo-600 hover:text-indigo-500"
-              type="button"> 
-               Sign up
-                </button>
-              </p>
+              {error}
             </div>
           )}
 
@@ -137,6 +128,18 @@ export default function Login({ onLogin, onNavigateToSignUp }) {
           >
             Sign in to Portal
           </button>
+          
+          {/* Sign Up Link */}
+          <p className="mt-6 text-center text-sm text-slate-600">
+            Don't have an account?{" "}
+            <button 
+              onClick={onNavigateToSignUp} 
+              className="font-bold text-indigo-600 hover:text-indigo-500"
+              type="button"
+            >
+              Sign up
+            </button>
+          </p>
         </form>
       </div>
     </div>
