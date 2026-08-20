@@ -1,54 +1,56 @@
 import { useState } from 'react';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import AdminPortal from './pages/AdminPortal';
 import LecturerPortal from './pages/LecturerPortal';
-import KioskMode from './pages/KioskMode';
 
 export default function App() {
-  // Authentication State
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null); // 'admin' or 'lecturer'
+  // Tracks if the user is an 'admin' or 'lecturer' (null means not logged in)
+  const [userRole, setUserRole] = useState(null); 
   
-  // A simple router state just for the demo 
-  // (If you are using react-router-dom, you would use <Routes> instead)
-  const [currentView, setCurrentView] = useState('login');
+  // Tracks which screen to show BEFORE logging in ('login' or 'signup')
+  const [authView, setAuthView] = useState("login"); 
 
+  // This function is called when someone successfully logs in or signs up
   const handleLogin = (role) => {
-    setIsAuthenticated(true);
     setUserRole(role);
-    setCurrentView(role === 'admin' ? 'admin' : 'lecturer');
   };
 
+  // This function is called when someone clicks the Log Out button in a portal
   const handleLogout = () => {
-    setIsAuthenticated(false);
     setUserRole(null);
-    setCurrentView('login');
+    setAuthView("login"); // Sends them back to the login screen
   };
 
-  // If you want to view the Kiosk easily for testing without logging in
-  if (currentView === 'kiosk') {
+  // --------------------------------------------------------
+  // TRAFFIC CONTROLLER: What screen should we show right now?
+  // --------------------------------------------------------
+
+  // SCENARIO 1: The user is NOT logged in yet (!userRole)
+  if (!userRole) {
+    
+    // Are they trying to create an account? Show the SignUp page.
+    if (authView === "signup") {
+      return (
+        <SignUp 
+          onBackToLogin={() => setAuthView("login")} 
+          onRegister={handleLogin} 
+        />
+      );
+    }
+    
+    // Otherwise, show the normal Login page.
     return (
-      <div className="relative min-h-screen">
-        <button onClick={() => setCurrentView('login')} className="absolute top-4 left-4 z-50 bg-slate-800 text-white px-4 py-2 rounded">Exit Kiosk</button>
-        <KioskMode />
-      </div>
+      <Login 
+        onLogin={handleLogin} 
+        onNavigateToSignUp={() => setAuthView("signup")} 
+      />
     );
   }
 
-  // Not authenticated? Force the Login Screen.
-  if (!isAuthenticated) {
-    return (
-      <div className="relative min-h-screen">
-        <button onClick={() => setCurrentView('kiosk')} className="absolute top-4 right-4 z-50 bg-slate-800 text-white px-4 py-2 rounded">Launch Kiosk Mode</button>
-        <Login onLogin={handleLogin} />
-      </div>
-    );
-  }
-
- // Authenticated? Route to the correct portal based on role.
+  // SCENARIO 2: The user IS logged in. Show them their portal!
   return (
     <div className="relative min-h-screen">
-      {/* We pass handleLogout as a prop to both portals so the Hamburger menus can trigger it */}
       {userRole === 'admin' && <AdminPortal onLogout={handleLogout} />}
       {userRole === 'lecturer' && <LecturerPortal onLogout={handleLogout} />}
     </div>
