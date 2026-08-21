@@ -12,7 +12,8 @@ export default function Login({ onLogin, onNavigateToSignUp }) {
     
     try {
       // REAL SECURE LOGIN
-      const response = await fetch("https://smart-attendance-backend-x0ph.onrender.com/api/login", {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

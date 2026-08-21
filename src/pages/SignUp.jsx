@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function SignUp({ onBackToLogin, onRegister }) {
-  const [name, setName] = useState("");
+  const [fullname, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("lecturer"); // Default role
@@ -11,8 +11,12 @@ export default function SignUp({ onBackToLogin, onRegister }) {
     e.preventDefault();
     
     try {
-      // REAL SECURE REGISTRATION
-      const response = await fetch("https://smart-attendance-backend-x0ph.onrender.com/api/register", {
+      // Change this:
+      // const response = await fetch("https://smart-attendance-backend-x0ph.onrender.com/api/register", {
+
+      // To this:
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -116,6 +120,7 @@ export default function SignUp({ onBackToLogin, onRegister }) {
             >
               <option value="lecturer">Lecturer</option>
               <option value="admin">Administrator</option>
+              <option value="course_rep">Course Representative</option>
             </select>
           </div>
 
